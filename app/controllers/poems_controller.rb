@@ -14,11 +14,16 @@ class PoemsController < ApplicationController
 
   # GET /poems/new
   def new
-    @poem = Poem.new
+    if  params[:back]
+       @poem = Poem.new(poems_params)
+    else
+      @poem = Poem.new
+    end
   end
 
   # GET /poems/1/edit
   def edit
+   @poem = Poem.find(params[:id])
   end
 
   # POST /poems
@@ -28,7 +33,7 @@ class PoemsController < ApplicationController
 
     respond_to do |format|
       if @poem.save
-        format.html { redirect_to @poem, notice: 'Poem was successfully created.' }
+        format.html { redirect_to poems_path, notice: 'Poem was successfully created.' }
         format.json { render :show, status: :created, location: @poem }
       else
         format.html { render :new }
@@ -41,7 +46,8 @@ class PoemsController < ApplicationController
   # PATCH/PUT /poems/1.json
   def update
     respond_to do |format|
-      if @poem.update(poem_params)
+      if @poem = Poem.find(params[:id])
+         @poem.update(poem_params.permit(:title, :content, :auther))
         format.html { redirect_to @poem, notice: 'Poem was successfully updated.' }
         format.json { render :show, status: :ok, location: @poem }
       else
@@ -69,6 +75,7 @@ class PoemsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def poem_params
-      params.require(:poem).permit(:content, :auther)
+      params.require(:poem).permit(:title, :content, :auther)
     end
+
 end
